@@ -1,8 +1,7 @@
 # cisco_nxos
 
 This Ansible Network role provides a set of platform dependent fuctions that
-are designed to work with Cisco NX-OS network devices.  The functions included
-int his role inlcuding both configuration and fact collection.
+are designed to work with Cisco NX-OS network devices. The functions in this role include both configuration and fact collection.
 
 ## Requirements
 
@@ -11,7 +10,7 @@ int his role inlcuding both configuration and fact collection.
 
 ## Functions
 
-This section provides a list of the availabe functions that are including
+This section provides a list of the availabe functions that are included
 in this role.  Any of the provided functions can be implemented in Ansible
 playbooks to perform automation activities on Cisco NX-OS devices.
 
