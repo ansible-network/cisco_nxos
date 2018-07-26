@@ -1,0 +1,49 @@
+---
+- name: match sections
+  pattern_match:
+    regex: "hostname (.+)"
+  register: hostname
+
+- name: match ip domain-name <str>
+  pattern_match:
+    regex: "ip domain-name (.+)"
+  register: domain_name
+
+- name: match ip domain lookup
+  pattern_match:
+    regex: "ip domain lookup vrf (\\S+) source-interface (\\S+)"
+  register: domain_lookup
+  export: yes
+
+- name: match name servers
+  pattern_match:
+    regex: "ip name-server vrf (.+) (.+)"
+    match_all: yes
+  register: name_servers
+  export: yes
+
+- name: template entries
+  json_template:
+    template:
+      - key: hostname
+        value: "{{ hostname.matches.0 }}"
+      - key: domain_name
+        value: "{{ domain_name.matches.0 }}"
+      - key: domain_lookup
+        object:
+          - key: enabled
+            value: "{{ domain_lookup.matches | bool }}"
+          - key: vrf
+            value: "{{ domain_lookup.matches.0 }}"
+          - key: source_interface
+            value: "{{ domain_lookup.matches.1 }}"
+      - key: name_servers
+        elements:
+          - key: server
+            value: "{{ item.matches.1 }}"
+          - key: vrf
+            value: "{{ item.matches.0 }}"
+        repeat_for: "{{ name_servers }}"
+  register: system
+  extend: cisco_nxos.config
+  export: yes

@@ -18,7 +18,8 @@ playbooks to perform automation activities on Cisco NX-OS devices.
 Please see the documentation link for each function for details on how to use
 the function in an Ansible playbook.
 
-* get_facts [[source]](https://github.com/ansible-network/nxos/blob/devel/tasks/get_facts.yaml) [[docs]](https://github.com/ansible-network/nxos/blob/devel/docs/get_facts.md)
+* get_facts [[source]](https://github.com/ansible-network/cisco_nxos/blob/devel/tasks/get_facts.yaml) [[docs]](https://github.com/ansible-network/cisco_nxos/blob/devel/docs/get_facts.md)
+* get_config [[source]](https://github.com/ansible-network/cisco_nxos/blob/devel/tasks/get_config.yaml) [[docs]](https://github.com/ansible-network/cisco_nxos/blob/devel/docs/get_config.md)
 
 ## License
 

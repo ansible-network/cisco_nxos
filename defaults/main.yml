@@ -1,2 +1,6 @@
 ---
 # defaults file for ansible-network.cisco_nxos
+#
+nxos_config_source:
+  running: show running-config
+  startup: show startup-config

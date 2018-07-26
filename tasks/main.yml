@@ -13,6 +13,7 @@
   set_fact:
     nxos_functions:
       - get_facts
+      - get_config
       - noop
 
 - name: validate the requested function is supported
