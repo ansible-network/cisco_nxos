@@ -1,0 +1,24 @@
+---
+# tasks file for cisco_nxos
+#
+- name: set the role version
+  set_fact:
+    ansible_network_cisco_nxos_version: "devel"
+
+- name: display the role version to stdout
+  debug:
+    msg: "ansible_network_cisco_nxos version {{ ansible_network_cisco_nxos_version }}"
+
+- name: set role supported functions
+  set_fact:
+    nxos_functions:
+      - get_facts
+      - noop
+
+- name: validate the requested function is supported
+  fail:
+    msg: "invalid function specified, expected one of {{ nxos_functions }}, got {{ function }}"
+  when: function | default('noop') not in nxos_functions
+
+- name: include function specific tasks and run
+  include_tasks: "{{ function  | default('noop') }}.yaml"
