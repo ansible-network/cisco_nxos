@@ -78,6 +78,9 @@ The default value is `all`
 
 #### Current supported values for subset are
 
+* system
+* hostname
+
 
 ## Notes
 

@@ -3,11 +3,18 @@
 # key provide would coorespond to the subset filter.  Each entry should only
 # have two entries: command and parser.  The command is the command to run on
 # the target device.  The parser is the name of the parser relative to the
-# parser_templates/ folder
+# parser_templates/cli/ folder
 #
 # For example, lets assume we provide a top level subset call "system":
 #
 # system:
 #   command: show version
-#  parser: show_version.yaml
+#   parser: show_version.yaml
 #
+hostname:
+  command: show hostname
+  parser: show_hostname.yaml
+
+system:
+  command: show version
+  parser: show_version.yaml

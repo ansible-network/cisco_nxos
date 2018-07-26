@@ -1,0 +1,15 @@
+---
+- name: run command and parse output
+  cli:
+    command: "{{ nxos_command }}"
+    parser: "{{ parser }}"
+  with_first_found:
+    - files:
+        - "{{ nxos_parser }}"
+      paths:
+        - "{{ playbook_dir }}/parser_templates/nxos"
+        - "~/.ansible/ansible_network/parser_templates/nxos"
+        - "/etc/ansible/ansible_network/parser_templates/nxos"
+        - "{{ role_path }}/parser_templates"
+  loop_control:
+    loop_var: parser

@@ -1,0 +1,7 @@
+---
+- name: add hostname to system facts
+  set_vars:
+    hostname: "{{ content }}"
+  register: system
+  extend: cisco_nxos
+  export: yes

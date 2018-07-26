@@ -16,6 +16,6 @@
   include_tasks: run_cli.yaml
   vars:
     nxos_command: "{{ item.value.command }}"
-    nxos_parser: "{{ item.value.parser }}"
+    nxos_parser: "cli/{{ item.value.parser }}"
   loop: "{{ lookup('dict', commands) }}"
   when: item.key in subset | default(item.key) or subset in ['*', 'all']
