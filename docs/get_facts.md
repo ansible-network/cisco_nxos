@@ -66,6 +66,19 @@ Below is an example of how to use the `get_facts` function with `tasks`.
           - interfaces
 ```
 
+## Adding new parsers
+
+Over time new parsers can be added to the role to make it easy to return
+structed facts from network devices.  To add a new parser to this role, simply
+submit a pull request with the following changes:
+
+1) New /updated parser in `parse_templates/cli`
+
+2) Update `vars/get_facts.yaml` and add the new parser and cooresponding `show` command
+
+Once added, the command will be executed and the parsed results returned as
+Ansible facts.
+
 ## Arguments
 
 ### subset 
