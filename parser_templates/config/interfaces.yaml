@@ -41,11 +41,13 @@
   loop: "{{ context }}"
   register: matches
 
-- name: template entries
+- name: template entries as list
   json_template:
     template:
       - key: "{{ item.name.matches.0 }}"
         object:
+          - key: interface
+            value: "{{ item.name.matches.0 }}"
           - key: description
             value: "{{ item.description.matches.0 }}"
           - key: enabled
@@ -60,6 +62,31 @@
                 value: "{{ item.dhcp.matches != None }}"
   loop: "{{ matches }}"
   register: interfaces
+  extend: cisco_nxos.config
+  export: yes
+  export_as: list
+
+- name: template entries as dict
+  json_template:
+    template:
+      - key: "{{ item.name.matches.0 }}"
+        object:
+          - key: interface
+            value: "{{ item.name.matches.0 }}"
+          - key: description
+            value: "{{ item.description.matches.0 }}"
+          - key: enabled
+            value: "{{ not item.enabled.matches }}"
+          - key: ipv4
+            object:
+              - key: address
+                value: "{{ item.ipaddr.matches.0 }}"
+              - key: netmask
+                value: "{{ item.ipaddr.matches.1 }}"
+              - key: dhcp
+                value: "{{ item.dhcp.matches != None }}"
+  loop: "{{ matches }}"
+  register: interface
   extend: cisco_nxos.config
   export: yes
   export_as: dict

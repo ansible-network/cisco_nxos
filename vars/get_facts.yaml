@@ -15,11 +15,22 @@ hostname:
   command: show hostname
   parser: show_hostname.yaml
 
-system:
+version:
   command: show version
   parser: show_version.yaml
-  
-bgp:
+
+system_resources:
+  command: show system resources
+  parser: show_system_resources.yaml
+
+system_uptime:
+  command: show system uptime
+  parser: show_system_uptime.yaml
+
+vlan_brief:
+  command: show vlan brief
+  parser: show_vlan_brief.yaml
+
+bgp_summary:
   command: show ip bgp summary
   parser: show_ip_bgp_summary.yaml
-

@@ -1,28 +1,115 @@
 ---
-- name: parse softare version
+- name: parser meta data
+  parser_metadata:
+    version: 1.0
+    command: show version
+    network_os: nxos
+
+- name: "match header"
   pattern_match:
-    regex: "\\s{2}NXOS: version (\\S+)"
+    regex: "^Cisco Nexus Operating System"
+    match_all: yes
+    match_greedy: yes
+    match_until: "^$"
+  register: header
+
+- name: "match kickstart_version"
+  pattern_match:
+    regex: '(NXOS|kickstart)\:\s+version\s+(\S+)'
+  register: kickstart_version
+
+- name: "match kickstart_file"
+  pattern_match:
+    regex: '(NXOS|kickstart)\s+image\s+file\s+is\:\s+(\S+)$'
+  register: kickstart_file
+
+- name: "match system_version"
+  pattern_match:
+    regex: 'system\:\s+version\s+(\S+)'
+  register: system_version
+
+- name: "match system_file"
+  pattern_match:
+    regex: 'system\s+image\s+file\s+is\:\s+(\S+)$'
+  register: system_file
+
+- name: "match bios_version"
+  pattern_match:
+    regex: 'BIOS\:\s+version\s+(\w+)$'
+  register: bios_version
+
+- name: "match cpu_mem"
+  pattern_match:
+    regex: '\s+(.+)\s+with\s+(\d+)\s+(\w+)\s+of\s+memory.$'
+  register: cpu_mem
+
+- name: "match chassis"
+  pattern_match:
+    regex: 'cisco\s+(.+)\s+Chassis'
+  register: chassis
+
+- name: "match board_id"
+  pattern_match:
+    regex: 'Processor\s+Board\s+ID\s+(\w+)'
+  register: board_id
+
+- name: "match bootflash_size"
+  pattern_match:
+    regex: 'bootflash\:\s+(\d+)\s+(\w+)'
+  register: bootflash_size
+
+- name: "template to cisco_nxos.version"
+  export: yes
+  export_as: dict
+  extend: cisco_nxos
   register: version
-
-- name: parse image file
-  pattern_match:
-    regex: "\\s{2}NXOS image file is: (\\S+)"
-  register: image
-
-- name: parse system name
-  pattern_match:
-    regex: "Device name: (\\S+)"
-  register: hostname
-
-- name: build nxos system facts
   json_template:
     template:
-      - key: version
-        value: "{{ version.matches.0 }}"
-      - key: image_file
-        value: "{{ image.matches.0 }}"
-      - key: hostname
-        value: "{{ hostname.matches.0 }}"
-  register: system
-  export: yes
-  extend: cisco_nxos
+      - key: header
+        value: "{{ header | join('') }}"
+
+      - key: software
+        object:
+          - key: bios
+            object:
+              - key: version
+                value: "{{ bios_version.matches.0 }}"
+
+          - key: kickstart
+            object:
+              - key: version
+                value: "{{ kickstart_version.matches.1 }}"
+              - key: file
+                value: "{{ kickstart_file.matches.1 }}"
+
+          - key: system
+            object:
+              - key: version
+                value: "{{ system_version.matches.0 | default(kickstart_version.matches.1) }}"
+              - key: file
+                value: "{{ system_file.matches.0 | default(kickstart_file.matches.1) }}"
+
+      - key: hardware
+        object:
+          - key: serial_number
+            value: "{{ board_id.matches.0 }}"
+
+          - key: chassis
+            value: "{{ chassis.matches.0 }}"
+
+          - key: bootflash_size
+            object:
+              - key: value
+                value: "{{ bootflash_size.matches.0 }}"
+              - key: unit
+                value: "{{ bootflash_size.matches.1 }}"
+
+          - key: cpu
+            value: "{{ cpu_mem.matches.0 }}"
+
+          - key: memory_size
+            object:
+              - key: value
+                value: "{{ cpu_mem.matches.1 }}"
+              - key: unit
+                value: "{{ cpu_mem.matches.2 }}"

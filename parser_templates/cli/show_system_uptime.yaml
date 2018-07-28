@@ -1,0 +1,61 @@
+---
+- name: parser meta data
+  parser_metadata:
+    version: 1.0
+    command: show system uptime
+    network_os: nxos
+
+- name: "match system_uptime_value"
+  pattern_match:
+    regex: 'System\s+uptime:\s+(.+)'
+  register: system_uptime_value
+
+- name: "match system_uptime_values"
+  pattern_match:
+    regex: '(\d+)\s+(\w+),\s+(\d+)\s+(\w+),\s+(\d+)\s+(\w+),\s+(\d+)\s+(\w+)'
+    content: "{{ system_uptime_value.matches.0 }}"
+  register: system_uptime_values
+
+- name: "match kernel_uptime_value"
+  pattern_match:
+    regex: 'Kernel\s+uptime:\s+(.+)'
+  register: kernel_uptime_value
+
+- name: "match kernel_uptime_values"
+  pattern_match:
+    regex: '(\d+)\s+(\w+),\s+(\d+)\s+(\w+),\s+(\d+)\s+(\w+),\s+(\d+)\s+(\w+)'
+    content: "{{ kernel_uptime_value.matches.0 }}"
+  register: kernel_uptime_values
+
+- name: "template to cisco_nxos.system.uptime"
+  export: yes
+  export_as: dict
+  extend: cisco_nxos.system
+  register: uptime
+  json_template:
+    template:
+      - key: system
+        object:
+          - key: value
+            value: "{{ system_uptime_value.matches.0 }}"
+          - key: "{{ system_uptime_values.matches.1 }}"
+            value: "{{ system_uptime_values.matches.0 }}"
+          - key: "{{ system_uptime_values.matches.3 }}"
+            value: "{{ system_uptime_values.matches.2 }}"
+          - key: "{{ system_uptime_values.matches.5 }}"
+            value: "{{ system_uptime_values.matches.4 }}"
+          - key: "{{ system_uptime_values.matches.7 }}"
+            value: "{{ system_uptime_values.matches.6 }}"
+
+      - key: kernel
+        object:
+          - key: value
+            value: "{{ kernel_uptime_value.matches.0 }}"
+          - key: "{{ kernel_uptime_values.matches.1 }}"
+            value: "{{ kernel_uptime_values.matches.0 }}"
+          - key: "{{ kernel_uptime_values.matches.3 }}"
+            value: "{{ kernel_uptime_values.matches.2 }}"
+          - key: "{{ kernel_uptime_values.matches.5 }}"
+            value: "{{ kernel_uptime_values.matches.4 }}"
+          - key: "{{ kernel_uptime_values.matches.7 }}"
+            value: "{{ kernel_uptime_values.matches.6 }}"

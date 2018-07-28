@@ -1,0 +1,171 @@
+---
+- name: parser meta data
+  parser_metadata:
+    version: 1.0
+    command: show system resources
+    network_os: nxos
+
+- name: "match processes"
+  pattern_match:
+    #                         0
+    regex: 'Processes\s+:\s+(.+)'
+  register: processes
+
+- name: "match processes_values"
+  pattern_match:
+    regex: '(\d+)\s+(\w+),\s+(\d+)\s+(\w+)'
+    content: "{{ processes.matches.0 }}"
+  register: processes_values
+
+- name: "match load"
+  pattern_match:
+    #                           0
+    regex: 'Load\s+average:\s+(.+)'
+  register: load
+
+- name: "match load_values"
+  pattern_match:
+    regex: '1\s+minute:\s+(\d+.\d+)\s+5\s+minutes:\s+(\d+.\d+)\s+15\s+minutes:\s+(\d+.\d+)'
+    content: "{{ load.matches.0 }}"
+  register: load_values
+
+- name: "match memory"
+  pattern_match:
+    #                           0
+    regex: 'Memory\s+usage:\s+(.+)'
+  register: memory
+
+- name: "match memory_values"
+  pattern_match:
+    #         0       1       2
+    regex: '(.+),\s+(.+),\s+(.+)'
+    content: "{{ memory.matches.0 }}"
+  register: memory_values
+
+- name: "match memory_values_total"
+  pattern_match:
+    #         0    1       2
+    regex: '(\d+)(\w+)\s+(\w+)'
+    content: "{{ memory_values.matches.0 }}"
+  register: memory_values_total
+
+- name: "match memory_values_used"
+  pattern_match:
+    #         0    1       2
+    regex: '(\d+)(\w+)\s+(\w+)'
+    content: "{{ memory_values.matches.1 }}"
+  register: memory_values_used
+
+- name: "match memory_values_free"
+  pattern_match:
+    #         0    1       2
+    regex: '(\d+)(\w+)\s+(\w+)'
+    content: "{{ memory_values.matches.2 }}"
+  register: memory_values_free
+
+- name: "match cpu"
+  pattern_match:
+    #                           0
+    regex: 'CPU\s+states\s+:\s+(.+)'
+  register: cpu
+
+- name: "match cpu_values"
+  pattern_match:
+    #         0       1       2
+    regex: '(.+),\s+(.+),\s+(.+)'
+    content: "{{ cpu.matches.0 }}"
+  register: cpu_values
+
+- name: "match cpu_values_user"
+  pattern_match:
+    #          0      1      2
+    regex: '([\d.]+)(\W)\s+(\w+)'
+    content: "{{ cpu_values.matches.0 }}"
+  register: cpu_values_user
+
+- name: "match cpu_values_kernel"
+  pattern_match:
+    #          0      1      2
+    regex: '([\d.]+)(\W)\s+(\w+)'
+    content: "{{ cpu_values.matches.1 }}"
+  register: cpu_values_kernel
+
+- name: "match cpu_values_idle"
+  pattern_match:
+    #          0      1      2
+    regex: '([\d.]+)(\W)\s+(\w+)'
+    content: "{{ cpu_values.matches.2 }}"
+  register: cpu_values_idle
+
+- name: "template to cisco_nxos.system.resources"
+  export: yes
+  export_as: dict
+  extend: cisco_nxos.system
+  register: resources
+  json_template:
+    template:
+      - key: processes
+        object:
+          - key: value
+            value: "{{ processes.matches.0 }}"
+          - key: "{{ processes_values.matches.1 }}"
+            value: "{{ processes_values.matches.0 }}"
+          - key: "{{ processes_values.matches.3 }}"
+            value: "{{ processes_values.matches.2 }}"
+
+      - key: load
+        object:
+          - key: value
+            value: "{{ load.matches.0 }}"
+          - key: 1min
+            value: "{{ load_values.matches.0 }}"
+          - key: 5min
+            value: "{{ load_values.matches.1 }}"
+          - key: 15min
+            value: "{{ load_values.matches.2 }}"
+
+      - key: memory
+        object:
+          - key: value
+            value: "{{ memory.matches.0 }}"
+          - key: total
+            object:
+              - key: value
+                value: "{{ memory_values_total.matches.0 }}"
+              - key: unit
+                value: "{{ memory_values_total.matches.1 | default('K') }}"
+          - key: used
+            object:
+              - key: value
+                value: "{{ memory_values_used.matches.0 }}"
+              - key: unit
+                value: "{{ memory_values_used.matches.1 | default('K') }}"
+          - key: free
+            object:
+              - key: value
+                value: "{{ memory_values_free.matches.0 }}"
+              - key: unit
+                value: "{{ memory_values_free.matches.1 | default('K') }}"
+
+      - key: cpu
+        object:
+          - key: value
+            value: "{{ cpu.matches.0 }}"
+          - key: "user"
+            object:
+              - key: value
+                value: "{{ cpu_values_user.matches.0 }}"
+              - key: unit
+                value: "{{ cpu_values_user.matches.1 | default('%') }}"
+          - key: "kernel"
+            object:
+              - key: value
+                value: "{{ cpu_values_kernel.matches.0 }}"
+              - key: unit
+                value: "{{ cpu_values_kernel.matches.1 | default('%') }}"
+          - key: "idle"
+            object:
+              - key: value
+                value: "{{ cpu_values_idle.matches.0 }}"
+              - key: unit
+                value: "{{ cpu_values_idle.matches.1 | default('%') }}"

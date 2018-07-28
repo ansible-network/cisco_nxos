@@ -55,7 +55,7 @@ def main():
     facts = module.from_json(facts)
     result = {
         'changed': False,
-        'ansible_facts': {'arista_nxos': {'capabilities': facts['device_info']}}
+        'ansible_facts': {'cisco_nxos': {'capabilities': facts['device_info']}}
     }
     module.exit_json(**result)
 

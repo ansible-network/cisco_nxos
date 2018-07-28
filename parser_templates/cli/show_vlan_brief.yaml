@@ -1,0 +1,41 @@
+---
+- name: parser meta data
+  parser_metadata:
+    version: 1.0
+    command: show vlan brief
+    network_os: nxos
+
+- name: match cli sections
+  pattern_match:
+    regex: "^\\d+"
+    match_all: yes
+    match_greedy: yes
+#    match_until: "^$"
+  register: cli_section
+
+- name: match cli values
+  pattern_group:
+    - name: match row
+      pattern_match:
+        regex: '^(?P<id>\d+)\s+(?P<name>\w+)\s+(?P<status>.*?)\s+(?P<ports>[Eth\d+\/\d+|,|\\s+]*)'
+        content: "{{ item }}"
+      register: fact
+  loop: "{{ cli_section }}"
+  register: cli_values
+
+- name: template to platform vlan
+  export: yes
+  export_as: list
+  extend: cisco_nxos.vlan
+  loop: "{{ cli_values }}"
+  register: brief
+  json_template:
+    template:
+      - key: id
+        value: "{{ item.fact.id }}"
+      - key: name
+        value: "{{ item.fact.name }}"
+      - key: status
+        value: "{{ item.fact.status }}"
+      - key: ports
+        value: "{{ item.fact.ports.replace('\n', ',').replace(' ', '').replace('Eth', 'Ethernet').split(',')[:-1] }}"

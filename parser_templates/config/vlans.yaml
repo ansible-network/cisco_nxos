@@ -1,0 +1,87 @@
+---
+- name: parser meta data
+  parser_metadata:
+    version: 1.0
+    command: show running-config vlan
+    network_os: nxos
+
+- name: match config sections
+  pattern_match:
+    regex: "^vlan [1-4096]$"
+    match_all: yes
+    match_greedy: yes
+  register: config_section
+
+- name: match vlan config values
+  loop: "{{ config_section }}"
+  register: config_values
+  pattern_group:
+    - name: match id
+      pattern_match:
+        regex: '^vlan (\S+)'
+        content: "{{ item }}"
+      register: id
+
+    - name: match mode
+      pattern_match:
+        regex: 'mode (\S+)'
+        content: "{{ item }}"
+      register: mode
+
+    - name: match state
+      pattern_match:
+        regex: 'state (\S+)'
+        content: "{{ item }}"
+      register: state
+
+    - name: match name
+      pattern_match:
+        regex: 'name (\S+)'
+        content: "{{ item }}"
+      register: name
+
+    - name: match vn-segment
+      pattern_match:
+        regex: 'vn-segment (\S+)'
+        content: "{{ item }}"
+      register: vn_segment
+
+- name: "template to cisco_nxos.config.vlans as list"
+  export: yes
+  export_as: list
+  extend: cisco_nxos.config
+  loop: "{{ config_values }}"
+  register: vlans
+  json_template:
+    template:
+      - key: vlan_id
+        value: "{{ item.id.matches.0 }}"
+      - key: mode
+        value: "{{ item.mode.matches.0 }}"
+      - key: vlan_state
+        valye: "{{ item.state.matches.0 }}"
+      - key: vlan_name
+        value: "{{ item.name.matches.0 }}"
+      - key: mapped_vni
+        value: "{{ item.vn_segment.matches.0 }}"
+
+- name: "template to cisco_nxos.config.vlan as dict"
+  export: yes
+  export_as: dict
+  extend: cisco_nxos.config
+  loop: "{{ config_values }}"
+  register: vlan
+  json_template:
+    template:
+      - key: "{{ item.id.matches.0 }}"
+        object:
+          - key: vlan_id
+            value: "{{ item.id.matches.0 }}"
+          - key: mode
+            value: "{{ item.mode.matches.0 }}"
+          - key: vlan_state
+            valye: "{{ item.state.matches.0 }}"
+          - key: vlan_name
+            value: "{{ item.name.matches.0 }}"
+          - key: mapped_vni
+            value: "{{ item.vn_segment.matches.0 }}"
