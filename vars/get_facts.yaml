@@ -1,6 +1,6 @@
 ---
 # This file is used to make show commands to parser templates.  The top level
-# key provide would coorespond to the subset filter.  Each entry should only
+# key provide would correspond to the subset filter.  Each entry should only
 # have two entries: command and parser.  The command is the command to run on
 # the target device.  The parser is the name of the parser relative to the
 # parser_templates/cli/ folder
@@ -18,3 +18,8 @@ hostname:
 system:
   command: show version
   parser: show_version.yaml
+  
+bgp:
+  command: show ip bgp summary
+  parser: show_ip_bgp_summary.yaml
+

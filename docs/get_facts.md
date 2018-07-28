@@ -74,7 +74,7 @@ submit a pull request with the following changes:
 
 1) New /updated parser in `parse_templates/cli`
 
-2) Update `vars/get_facts.yaml` and add the new parser and cooresponding `show` command
+2) Update `vars/get_facts.yaml` and add the new parser and corresponding `show` command
 
 Once added, the command will be executed and the parsed results returned as
 Ansible facts.
