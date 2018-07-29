@@ -16,5 +16,3 @@ Major Changes
 -------------
 
 - Initial release of the `cisco_nxos` role.
-- NEW facts subset `system`
-- NEW facts subset `hostname`

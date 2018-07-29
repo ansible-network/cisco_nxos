@@ -4,3 +4,6 @@
 nxos_config_source:
   running: show running-config
   startup: show startup-config
+
+nxos_get_facts_command_map: "{{ role_path }}/vars/get_facts_command_map.yaml"
+nxos_get_facts_subset: "{{ subset | default(['default']) }}"
