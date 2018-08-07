@@ -16,7 +16,7 @@
 
     - name: match description
       pattern_match:
-        regex: "description (.+)"
+        regex: 'description (.+)'
         content: "{{ item }}"
       register: description
 
@@ -26,17 +26,191 @@
         content: "{{ item }}"
       register: enabled
 
+    - name: match cdp enable
+      pattern_match:
+        regex: "(no) cdp enable"
+        content: "{{ item }}"
+      register: cdp_enable
+
     - name: match ip address
       pattern_match:
-        regex: "ip address (\\S+)/(\\d+)"
+        regex: 'mtu (\d+)'
+        content: "{{ item }}"
+      register: mtu
+
+    - name: match ip address
+      pattern_match:
+        regex: 'ip address (\S+)/(\d+)'
         content: "{{ item }}"
       register: ipaddr
 
     - name: match ip address dhcp
       pattern_match:
-        regex: "ip address (dhcp)"
+        regex: 'ip address (dhcp)'
         content: "{{ item }}"
       register: dhcp
+
+    - name: match lldp transmit
+      pattern_match:
+        regex: 'lldp transmit (\w+)'
+        content: "{{ item }}"
+      register: lldp_transmit
+
+    - name: match lldp receive
+      pattern_match:
+        regex: 'lldp receive (\w+)'
+        content: "{{ item }}"
+      register: lldp_receive
+
+    - name: match lldp dcbx version
+      pattern_match:
+        regex: 'lldp dcbx version (\w+)'
+        content: "{{ item }}"
+      register: lldp_dcbx_version
+
+    - name: match flowcontrol receive
+      pattern_match:
+        regex: 'flowcontrol receive (\w+)'
+        content: "{{ item }}"
+      register: flowcontrol_receive
+
+    - name: match flowcontrol send
+      pattern_match:
+        regex: 'flowcontrol send (\w+)'
+        content: "{{ item }}"
+      register: flowcontrol_send
+
+    - name: match priotity-flow-control mode
+      pattern_match:
+        regex: 'priotity-flow-control mode (\w+)'
+        content: "{{ item }}"
+      register: priority_flow_control_mode
+
+    - name: match priority-flow-control watch-dog-interval
+      pattern_match:
+        regex: 'priority-flow-control watch-dog-interval (\w+)'
+        content: "{{ item }}"
+      register: priority_flow_control_watch_dog_interval
+
+    - name: match negotiate
+      pattern_match:
+        regex: 'negotiate (.+)'
+        content: "{{ item }}"
+      register: negotiate
+
+    - name: match speed
+      pattern_match:
+        regex: 'speed (.+)'
+        content: "{{ item }}"
+      register: speed
+
+    - name: match duplex
+      pattern_match:
+        regex: 'duplex (.+)'
+        content: "{{ item }}"
+      register: duplex
+
+    - name: match storm-control broadcast level
+      pattern_match:
+        regex: 'storm-control broadcast level (.+)'
+        content: "{{ item }}"
+      register: storm_control_broadcast_level
+
+    - name: match storm-control multicast level
+      pattern_match:
+        regex: 'storm-control multicast level (.+)'
+        content: "{{ item }}"
+      register: storm_control_multicast_level
+
+    - name: match storm-control unicast level
+      pattern_match:
+        regex: 'storm-control unicast level (.+)'
+        content: "{{ item }}"
+      register: storm_control_unicast_level
+
+    - name: match spanning-tree port-priority
+      pattern_match:
+        regex: 'spanning-tree port-priority (\d+)'
+        content: "{{ item }}"
+      register: spanning_tree_port_priority
+
+    - name: match spanning-tree cost
+      pattern_match:
+        regex: 'spanning-tree cost (.+)'
+        content: "{{ item }}"
+      register: spanning_tree_cost
+
+    - name: match spanning-tree link-type
+      pattern_match:
+        regex: 'spanning-tree link-type (.+)'
+        content: "{{ item }}"
+      register: spanning_tree_link_type
+
+    - name: match spanning-tree port type
+      pattern_match:
+        regex: 'spanning-tree port type (.+)'
+        content: "{{ item }}"
+      register: spanning_tree_port_type
+
+    - name: match spanning-tree bpduguard
+      pattern_match:
+        regex: 'spanning-tree bpduguard (.+)'
+        content: "{{ item }}"
+      register: spanning_tree_bpduguard
+
+    - name: match spanning-tree bpdufilter
+      pattern_match:
+        regex: 'spanning-tree bpdufilter (.+)'
+        content: "{{ item }}"
+      register: spanning_tree_bpdufilter
+
+    - name: match switchport
+      pattern_match:
+        regex: "(no) switchport"
+        content: "{{ item }}"
+      register: switchport
+
+    - name: match switchport mode
+      pattern_match:
+        regex: 'switchport mode (\w+)'
+        content: "{{ item }}"
+      register: switchport_mode
+
+    - name: match switchport access vlan
+      pattern_match:
+        regex: 'switchport access vlan (\d+)'
+        content: "{{ item }}"
+      register: switchport_access_vlan
+
+    - name: match switchport trunk allowed vlan
+      pattern_match:
+        regex: 'switchport trunk allowed vlan (.+)'
+        content: "{{ item }}"
+      register: switchport_trunk_allowed_vlan
+
+    - name: match switchport trunk allowed vlan add
+      pattern_match:
+        regex: 'switchport trunk allowed vlan add (.+)'
+        content: "{{ item }}"
+      register: switchport_trunk_allowed_vlan_add
+
+    - name: match switchport block multicast
+      pattern_match:
+        regex: '(no) switchport block multicast'
+        content: "{{ item }}"
+      register: switchport_block_multicast
+
+    - name: match switchport block unicast
+      pattern_match:
+        regex: '(no) switchport block unicast'
+        content: "{{ item }}"
+      register: switchport_block_unicast
+
+    - name: match switchport mac-learn disable
+      pattern_match:
+        regex: '(no) switchport mac-learn disable'
+        content: "{{ item }}"
+      register: switchport_mac_learn_disable
 
   loop: "{{ context }}"
   register: matches
@@ -44,22 +218,86 @@
 - name: template entries as list
   json_template:
     template:
-      - key: "{{ item.name.matches.0 }}"
+      - key: name
+        value: "{{ item.name.matches.0 }}"
+      - key: description
+        value: "{{ item.description.matches.0 }}"
+      - key: enabled
+        value: "{{ not item.enabled.matches }}"
+      - key: mtu
+        value: "{{ item.mtu.matches.0 }}"
+      - key: speed
+        value: "{{ item.speed.matches.0 }}"
+      - key: duplex
+        value: "{{ item.duplex.matches.0 }}"
+      - key: cdp
+        value: "{{ not item.cdp_enable.matches }}"
+      - key: negotiate
+        value: "{{ item.negotiate.matches.0 }}"
+      - key: lldp
         object:
-          - key: interface
-            value: "{{ item.name.matches.0 }}"
-          - key: description
-            value: "{{ item.description.matches.0 }}"
+          - key: transmit
+            value: "{{ item.lldp_transmit.matches.0 }}"
+          - key: receive
+            value: "{{ item.lldp_receive.matches.0 }}"
+          - key: dcbx_version
+            value: "{{ item.lldp_dcbx_version.matches.0 }}"
+      - key: priority_flow_control
+        object:
+          - key: mode
+            value: "{{ item.priority_flow_control_mode.matches.0 }}"
+          - key: watch_dog_interval
+            value: "{{ item.priority_flow_control_watch_dog_interval.matches.0 }}"
+      - key: flowcontrol
+        object:
+          - key: send
+            value: "{{ item.flowcontrol_send.matches.0 }}"
+          - key: receive
+            value: "{{ item.flowcontrol_receive.matches.0 }}"
+      - key: storm_control
+        object:
+          - key: unicast_level
+            value: "{{ item.storm_control_unicast_level.matches.0 }}"
+          - key: multicast_level
+            value: "{{ item.storm_control_multicast_level.matches.0 }}"
+          - key: broadcast_level
+            value: "{{ item.storm_control_broadcast_level.matches.0 }}"
+      - key: spanning_tree
+        object:
+          - key: bpduguard
+            value: "{{ spanning_tree_bpduguard.matches.0 }}"
+          - key: bpdufilter
+            value: "{{ spanning_tree_bpdufilter.matches.0 }}"
+          - key: cost
+            value: "{{ item.spanning_tree_cost.matches.0 }}"
+          - key: link_type
+            value: "{{ item.spanning_tree_link_type.matches.0 }}"
+          - key: port_priority
+            value: "{{ item.spanning_tree_port_priority.matches.0 }}"
+          - key: port_type
+            value: "{{ item.spanning_tree_port_type.matches.0 }}"
+      - key: switchport
+        object:
           - key: enabled
-            value: "{{ not item.enabled.matches }}"
-          - key: ipv4
-            object:
-              - key: address
-                value: "{{ item.ipaddr.matches.0 }}"
-              - key: netmask
-                value: "{{ item.ipaddr.matches.1 }}"
-              - key: dhcp
-                value: "{{ item.dhcp.matches != None }}"
+            value: "{{ not item.switchport.matches }}"
+          - key: mode
+            value: "{{ item.switchport_mode.matches.0 }}"
+          - key: native_vlan
+            value: "{{ item.switchport_native_vlan.matches.0 }}"
+          - key: access_vlan
+            value: "{{ item.switchport_access_vlan.matches.0 }}"
+          - key: trunk_allowed_vlans
+            value: "{{ item.switchport_trunk_allowed_vlan.matches.0.split(',') }}"
+          - key: trunk_allowed_vlans_add
+            value: "{{ item.switchport_trunk_allowed_vlans_add.matches.0.split(',') }}"
+      - key: ipv4
+        object:
+          - key: address
+            value: "{{ item.ipaddr.matches.0 }}"
+          - key: netmask
+            value: "{{ item.ipaddr.matches.1 }}"
+          - key: dhcp
+            value: "{{ item.dhcp.matches != None }}"
   loop: "{{ matches }}"
   register: interfaces
   extend: cisco_nxos.config
@@ -71,12 +309,76 @@
     template:
       - key: "{{ item.name.matches.0 }}"
         object:
-          - key: interface
+          - key: name
             value: "{{ item.name.matches.0 }}"
           - key: description
             value: "{{ item.description.matches.0 }}"
           - key: enabled
             value: "{{ not item.enabled.matches }}"
+          - key: mtu
+            value: "{{ item.mtu.matches.0 }}"
+          - key: speed
+            value: "{{ item.speed.matches.0 }}"
+          - key: duplex
+            value: "{{ item.duplex.matches.0 }}"
+          - key: negotiate
+            value: "{{ item.negotiate.matches.0 }}"
+          - key: lldp
+            object:
+              - key: transmit
+                value: "{{ item.lldp_transmit.matches.0 }}"
+              - key: receive
+                value: "{{ item.lldp_receive.matches.0 }}"
+              - key: dcbx_version
+                value: "{{ item.lldp_dcbx_version.matches.0 }}"
+          - key: priority_flow_control
+            object:
+              - key: mode
+                value: "{{ item.priority_flow_control_mode.matches.0 }}"
+              - key: watch_dog_interval
+                value: "{{ item.priority_flow_control_watch_dog_interval.matches.0 }}"
+          - key: flowcontrol
+            object:
+              - key: send
+                value: "{{ item.flowcontrol_send.matches.0 }}"
+              - key: receive
+                value: "{{ item.flowcontrol_receive.matches.0 }}"
+          - key: storm_control
+            object:
+              - key: unicast_level
+                value: "{{ item.storm_control_unicast_level.matches.0 }}"
+              - key: multicast_level
+                value: "{{ item.storm_control_multicast_level.matches.0 }}"
+              - key: broadcast_level
+                value: "{{ item.storm_control_broadcast_level.matches.0 }}"
+          - key: spanning_tree
+            object:
+              - key: bpduguard
+                value: "{{ spanning_tree_bpduguard.matches.0 }}"
+              - key: bpdufilter
+                value: "{{ spanning_tree_bpdufilter.matches.0 }}"
+              - key: cost
+                value: "{{ item.spanning_tree_cost.matches.0 }}"
+              - key: link_type
+                value: "{{ item.spanning_tree_link_type.matches.0 }}"
+              - key: port_priority
+                value: "{{ item.spanning_tree_port_priority.matches.0 }}"
+              - key: port_type
+                value: "{{ item.spanning_tree_port_type.matches.0 }}"
+          - key: switchport
+            object:
+              - key: enabled
+                value: "{{ not item.switchport.matches }}"
+              - key: mode
+                value: "{{ item.switchport_mode.matches.0 }}"
+              - key: native_vlan
+                value: "{{ item.switchport_native_vlan.matches.0 }}"
+              - key: access_vlan
+                value: "{{ item.switchport_access_vlan.matches.0 }}"
+              - key: trunk_allowed_vlans
+                value: "{{ item.switchport_trunk_allowed_vlan.matches.0.split(',') }}"
+              - key: trunk_allowed_vlans_add
+                value: "{{ item.switchport_trunk_allowed_vlans_add.matches.0.split(',') }}"
           - key: ipv4
             object:
               - key: address
