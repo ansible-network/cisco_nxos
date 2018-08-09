@@ -14,6 +14,7 @@
     nxos_functions:
       - get_facts
       - get_config
+      - save_config
       - noop
 
 - name: validate the requested function is supported

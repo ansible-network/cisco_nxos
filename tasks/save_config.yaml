@@ -1,0 +1,8 @@
+---
+# save_config task
+#
+- name: copy running-config to startup-config
+  cli:
+    command: "copy running-config startup-config"
+  when: not ansible_check_mode
+  changed_when: true
