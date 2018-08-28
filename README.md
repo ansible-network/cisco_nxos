@@ -20,6 +20,7 @@ the function in an Ansible playbook.
 * get_facts [[source]](https://github.com/ansible-network/cisco_nxos/blob/devel/tasks/get_facts.yaml) [[docs]](https://github.com/ansible-network/cisco_nxos/blob/devel/docs/get_facts.md)
 * get_config [[source]](https://github.com/ansible-network/cisco_nxos/blob/devel/tasks/get_config.yaml) [[docs]](https://github.com/ansible-network/cisco_nxos/blob/devel/docs/get_config.md)
 * save_config [[source]](https://github.com/ansible-network/cisco_nxos/blob/devel/tasks/save_config.yaml) [[docs]](https://github.com/ansible-network/cisco_nxos/blob/devel/docs/save_config.md)
+* load_config [[source]](https://github.com/ansible-network/cisco_nxos/blob/devel/tasks/load_config.yaml) [[docs]](https://github.com/ansible-network/cisco_nxos/blob/devel/docs/load_config.md)
 
 ## License
 

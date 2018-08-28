@@ -1,0 +1,29 @@
+---
+# load_config task
+#
+- name: initialize function
+  include_tasks: includes/init.yaml
+
+- name: validate task arguments
+  validate_role_spec:
+    spec: load_config_spec.yaml
+
+- name: lookup config file
+  set_fact:
+    nxos_config_text: "{{ lookup('config_template', nxos_config_file) | join('\n') }}"
+
+- name: collect platform capabilities as facts
+  nxos_capabilities:
+
+- name: fail if replace is used for other platforms except 9K
+  fail:
+    msg: "replace is supported only on NXOS 9K platforms"
+  when: nxos_config_replace and "9K" not in cisco_nxos.capabilities.network_os_platform
+
+- name: Include replace task
+  include_tasks: includes/configure/replace.yaml
+  when: not ansible_check_mode and nxos_config_replace
+
+- name: Include configure task
+  include_tasks: includes/configure/configure.yaml
+  when: not ansible_check_mode and not nxos_config_replace

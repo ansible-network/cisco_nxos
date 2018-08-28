@@ -1,0 +1,18 @@
+- name: set the role version
+  set_fact:
+    ansible_network_nxos_path: "{{ role_path }}"
+    ansible_network_nxos_version: "devel"
+
+- name: display the role version to stdout
+  debug:
+    msg: "ansible_network.cisco_nxos version {{ ansible_network_nxos_version }}"
+
+- name: validate ansible_network_os == 'nxos'
+  fail:
+    msg: "expected ansible_network_os to be `nxos`, got `{{ ansible_network_os }}`"
+  when: ansible_network_os != 'nxos'
+
+- name: validate ansible_connection == 'network_cli'
+  fail:
+    msg: "expected ansible_network to be `network_cli`, got `{{ ansible_connection }}`"
+  when: ansible_connection != 'network_cli'

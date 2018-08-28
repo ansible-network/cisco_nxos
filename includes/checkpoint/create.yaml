@@ -1,0 +1,19 @@
+# Create configuration checkpoint when rollback is enabled
+#
+- name: disable prompt
+  cli:
+    command: terminal dont-ask
+
+- name: nxos dir list
+  cli:
+    command: dir
+  register: nxos_dir_listing
+
+- name: remove old checkpoint file from device
+  cli:
+    command: "delete {{ nxos_config_replace_fs }}{{ nxos_config_checkpoint_filename }}"
+  when: nxos_config_checkpoint_filename in nxos_dir_listing.stdout
+
+- name: configuration checkpoint
+  cli:
+    command: "copy running-config {{ nxos_config_replace_fs }}{{ nxos_config_checkpoint_filename }}"

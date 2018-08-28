@@ -1,17 +1,13 @@
 ---
 # tasks file for cisco_nxos
 #
-- name: set the role version
-  set_fact:
-    ansible_network_cisco_nxos_version: "devel"
-
-- name: display the role version to stdout
-  debug:
-    msg: "ansible_network_cisco_nxos version {{ ansible_network_cisco_nxos_version }}"
+- name: initialize function
+  include_tasks: includes/init.yaml
 
 - name: set role supported functions
   set_fact:
     nxos_functions:
+      - load_config
       - get_facts
       - get_config
       - save_config

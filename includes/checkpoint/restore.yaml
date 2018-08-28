@@ -1,0 +1,28 @@
+# Restore configuration if loading configuration fails
+#
+- name: disable prompt
+  cli:
+    command: terminal dont-ask
+
+- name: get current files on flash
+  cli:
+    command: dir
+  register: nxos_dir_listing
+
+- name: verify checkpoint file exists
+  fail:
+    msg: missing checkpoint file, cannot rollback
+  when: nxos_config_checkpoint_filename not in nxos_dir_listing.stdout
+
+- block:
+  - name: restore previous configuration
+    cli:
+      command: "configure replace {{ nxos_config_replace_fs }}{{ nxos_config_checkpoint_filename }}"
+
+  - name: display message
+    debug:
+      msg: "successfully restored checkpoint configuration"
+
+  always:
+  - name: invoke remove
+    include_tasks: "{{ role_path }}/includes/checkpoint/remove.yaml"

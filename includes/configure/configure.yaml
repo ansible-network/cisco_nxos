@@ -1,0 +1,49 @@
+# configure target device
+#
+
+- name: create checkpoint configuration on target device
+  include_tasks: "{{ role_path }}/includes/checkpoint/create.yaml"
+  when: nxos_rollback_enabled
+
+- name: collect platform capabilities
+  nxos_capabilities:
+
+- name: configure target device
+  block:
+    - name: enter configuration mode
+      cli:
+        command: configure terminal
+
+    - name: load configuration lines
+      cli:
+        command: "{{ line.strip() }}"
+      loop: "{{ nxos_config_text | to_lines }}"
+      loop_control:
+        loop_var: line
+      when: line != 'end'
+      changed_when: true
+
+    - name: leave configuration mode
+      cli:
+        command: end
+
+  rescue:
+    - name: rollback initiated
+      block:
+      - name: display message
+        debug:
+          msg: "error loading configuration, restoring checkpoint"
+
+      - name: restore previous checkpoint configuration
+        include_tasks: "{{ role_path }}/includes/checkpoint/restore.yaml"
+
+      when: nxos_rollback_enabled and '9K' in cisco_nxos.capabilities.network_os_platform
+
+    - name: display message
+      debug:
+        msg: "rollback could not be performed as the device does not support replace"
+      when: nxos_rollback_enabled and '9K' not in cisco_nxos.capabilities.network_os_platform
+
+    - name: mark the host as failed
+      fail:
+        msg: "error loading configuration onto target device"

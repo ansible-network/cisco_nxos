@@ -1,0 +1,67 @@
+---
+argument_spec:
+
+    ansible_network_os:
+      description:
+        - Set the name of Ansible network os platform. This value should be
+          set to `nxos` for this provider role.
+      required: true
+
+    nxos_config_text:
+      description:
+        - Provide the network device configuration as a single string. The
+          configuration text will be loaded onto the target network device.
+      type: str
+      aliases:
+        - config_text
+
+    nxos_config_file:
+      description:
+        - Provide relative or absolute path to the configuration file to be
+          loaded onto the target network device.
+      type: str
+      aliases:
+        - config_file
+
+    nxos_config_replace:
+      description:
+        - This value enables or disables the configuration replace feature of
+          the function. In order to use nxos_config_replace the target device
+          must support configure replace function, currently only NXOS 9K
+          device supports replace. This argument accepts a boolean value.
+      type: bool
+      default: false
+      aliases:
+        - replace
+
+    nxos_config_replace_fs:
+      description:
+        - This value provides the directory on the device where the config
+          file will be pushed during replace.
+      type: str
+      default: 'bootflash:'
+      aliases:
+        - replace_fs
+
+    nxos_config_remove_temp_files:
+      description:
+        - Configures the function to remove or not remove the temp files
+          created when preparing to load the configuration file. There are
+          two locations for temp files, one on the Ansible controller and
+          one on the device. This argument accepts a boolean value.
+      type: bool
+      default: true
+      aliases:
+        - remove_temp_files
+
+    nxos_rollback_enabled:
+      description:
+        - Rollbacks to configuration checkpoint when loading configuration
+          fails. This argument accepts a boolean value.
+      type: bool
+      default: true
+      aliases:
+        - rollback_enabled
+
+required_one_of:
+  - ['nxos_config_text', 'nxos_config_file']

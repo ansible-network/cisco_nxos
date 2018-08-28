@@ -1,0 +1,9 @@
+# Delete checkpoint
+#
+- name: disable prompt
+  cli:
+    command: terminal dont-ask
+
+- name: delete old checkpoint file
+  cli:
+    command: "delete {{ nxos_config_replace_fs }}{{ nxos_config_checkpoint_filename }}"

@@ -1,0 +1,69 @@
+---
+# replace.yaml
+#
+- name: disable prompt
+  cli:
+    command: terminal dont-ask
+
+- name: loading configuration onto device
+  block:
+  - name: nxos dir list
+    cli:
+      command: dir
+    register: nxos_dir_listing
+
+  - name: create temp working dir
+    file:
+      path: "{{ nxos_config_working_dir }}"
+      state: directory
+    run_once: true
+    check_mode: false
+
+    # always set check mode to false here as this task needs to always run
+    # in order to fully execute the task list.
+  - name: template source config
+    copy:
+      content: "{{ nxos_config_text }}"
+      dest: "{{ nxos_config_working_dir }}/{{ nxos_config_temp_config_file }}"
+    check_mode: false
+
+  - name: enable the nxos scp server
+    cli:
+      command: "{{ item }}"
+    loop:
+      - configure terminal
+      - feature scp-server
+      - end
+
+  - name: remove old config file from device
+    cli:
+      command: "delete {{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
+    when: nxos_config_temp_config_file in nxos_dir_listing.stdout
+
+  - name: copy configuration to device
+    net_put:
+      src: "{{ nxos_config_working_dir }}/{{ nxos_config_temp_config_file }}"
+      dest: "{{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
+
+  - name: replace current active configuration
+    cli:
+      command: "configure replace {{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
+    register: result_replace
+
+  always:
+  - name: remove uploaded configuration
+    cli:
+      command: "delete {{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
+    when: nxos_config_remove_temp_files
+
+  - name: remove temp working dir
+    file:
+      path: "{{ nxos_config_working_dir }}"
+      state: absent
+    run_once: true
+    when: nxos_config_remove_temp_files
+
+  - name: set host failed
+    fail:
+      msg: "error loading configuration onto target device, rollbacked to previous configuration"
+    when: result_replace.failed == True or (result_replace.stdout is defined and result_replace.stdout is search("Configure replace failed"))
