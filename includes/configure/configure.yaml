@@ -3,7 +3,7 @@
 
 - name: create checkpoint configuration on target device
   include_tasks: "{{ role_path }}/includes/checkpoint/create.yaml"
-  when: nxos_rollback_enabled
+  when: nxos_rollback_enabled and '9K' in cisco_nxos.capabilities.network_os_platform
 
 - name: collect platform capabilities
   nxos_capabilities:
