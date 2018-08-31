@@ -10,7 +10,7 @@ __metaclass__ = type
 
 from ansible.module_utils.six import string_types
 from ansible.errors import AnsibleFilterError
-
+from datetime import datetime
 
 def normalize_interface_name(name):
     """Return the normalized interface name"""
@@ -51,10 +51,26 @@ def normalize_interface_name(name):
     return proper_interface
 
 
+def normalize_expire_date(expire):
+    proper_expire_date = None
+    if expire:
+        proper_expire_date = datetime.strptime(expire, "%c").strftime("%Y-%m-%d")
+    return proper_expire_date
+
+
+def strip_roles(roles):
+    stripped_roles = None
+    if roles:
+        stripped_roles = roles.strip()
+    return stripped_roles
+
+
 class FilterModule(object):
     """Filters for working with NXOS device"""
 
     def filters(self):
         return {
-            'normalize_interface_name': normalize_interface_name
+            'normalize_interface_name': normalize_interface_name,
+            'normalize_expire_date': normalize_expire_date,
+            'strip_roles': strip_roles
         }

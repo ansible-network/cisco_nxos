@@ -1,0 +1,62 @@
+---
+- name: parser meta data
+  parser_metadata:
+    version: 1.0
+    command: show user-account
+    network_os: nxos
+
+- name: match user sections
+  pattern_match:
+    regex: "user:.+"
+    match_all: yes
+    match_greedy: yes
+  register: section
+
+- name: match user values
+  pattern_group:
+    - name: match name
+      pattern_match:
+        regex: "user:(\\S+)"
+        content: "{{ item }}"
+      register: name
+    
+    - name: match role
+      pattern_match:
+        regex: "roles:(.*)"
+        content: "{{ item }}"
+      register: role
+    
+    - name: match sshkey
+      pattern_match:
+        regex: "ssh public key: (.*)"
+        content: "{{ item }}"
+      register: sshkey
+
+    - name: match expiry date
+      pattern_match:
+        regex: "expires on (.*)"
+        content: "{{ item }}"
+      register: expire
+
+  loop: "{{ section }}"
+  register: users
+
+- name: generate json data structure
+  json_template:
+    template:
+      - key: name
+        value: "{{ item.name.matches.0 }}"
+      - key: role
+        value: "{{ item.role.matches.0 | strip_roles }}"
+        when: item.role.matches.0 is defined
+      - key: sshkey
+        value: "{{ item.sshkey.matches.0 }}"
+        when: item.sshkey.matches.0 is defined
+      - key: expire
+        value: "{{ item.expire.matches.0 | normalize_expire_date }}"
+        when: item.expire.matches.0 is defined
+
+  loop: "{{ users }}"
+  export: yes
+  register: user_account_facts
+

@@ -1,0 +1,49 @@
+---
+- name: "check for required fact - name"
+  fail:
+    msg: "missing required fact: name"
+  with_items: "{{ users }}"
+  when: ( user.name is not defined )
+  loop_control:
+    loop_var: user
+  delegate_to: localhost
+
+- name: "check for potential login issues"
+  debug:
+    msg: "No password or sshkey found. User {{ user.name }} may not be able to login"
+  with_items: "{{ users }}"
+  when: ( user.password is not defined and user.sshkey is not defined )
+  loop_control:
+    loop_var: user
+  delegate_to: localhost
+ 
+- name: "fetch existing user account(s)"
+  cli:
+    command: show user-account
+  register: user_account_output
+
+- name: "generate existing user(s) facts as JSON"
+  command_parser:
+    file: "{{ role_path }}/parser_templates/cli/show_user_account.yaml"
+    content: "{{ user_account_output.stdout }}"
+
+- name: "show existing user information"
+  debug:
+    var: user_account_facts
+ 
+- name: "filter out users that need to be configured"
+  set_fact:
+    users: "{{ users | difference(user_account_facts) }}"
+ 
+- name: "display users to configure"
+  debug:
+    var: users
+   
+- name: "fetch template for configuring user(s)"
+  set_fact:
+    nxos_config_file: 'configure_user.j2'
+  when: users
+
+- include_tasks: load_config.yaml
+  when: users
+
