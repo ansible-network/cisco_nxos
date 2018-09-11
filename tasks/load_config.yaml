@@ -11,6 +11,7 @@
 - name: lookup config file
   set_fact:
     nxos_config_text: "{{ lookup('config_template', nxos_config_file) | join('\n') }}"
+  when: nxos_config_file != ''
 
 - name: collect platform capabilities as facts
   nxos_capabilities:

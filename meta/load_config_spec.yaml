@@ -63,5 +63,8 @@ argument_spec:
       aliases:
         - rollback_enabled
 
+mutually_exclusive:
+  - ['nxos_config_text', 'nxos_config_file']
+
 required_one_of:
   - ['nxos_config_text', 'nxos_config_file']
