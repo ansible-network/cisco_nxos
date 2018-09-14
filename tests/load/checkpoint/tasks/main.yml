@@ -1,0 +1,9 @@
+- name: import dependency role for test
+  include_role:
+    name: "{{ role_path.split('/tests/load/checkpoint')[0] }}"
+
+- name: checkpoint create test
+  include_tasks: create.yml
+
+- name: checkpoint restore test
+  include_tasks: restore.yml

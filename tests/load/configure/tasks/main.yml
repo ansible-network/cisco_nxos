@@ -1,0 +1,6 @@
+- name: import dependency role for test
+  include_role:
+    name: "{{ role_path.split('/tests/load/configure')[0] }}"
+
+- name: configure test
+  include_tasks: configure.yml

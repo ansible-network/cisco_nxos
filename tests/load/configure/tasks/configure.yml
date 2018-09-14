@@ -1,0 +1,26 @@
+- name: enter configuration mode
+  cli:
+    command: configure terminal
+  register: result
+
+- assert:
+    that:
+      - "result.failed == false"
+
+- name: load configuration
+  cli:
+    command: hostname foo
+  register: result
+
+- assert:
+    that:
+      - "result.failed == false"
+
+- name: leave configuration mode
+  cli:
+    command: end
+  register: result
+
+- assert:
+    that:
+      - "result.failed == false"

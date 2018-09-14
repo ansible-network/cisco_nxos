@@ -1,0 +1,33 @@
+- name: disable prompt
+  cli:
+    command: terminal dont-ask
+  register: result
+
+- assert:
+    that:
+      - "result.failed == false"
+
+- name: nxos dir list
+  cli:
+    command: dir
+  register: nxos_dir_listing
+
+- name: remove old checkpoint file from device
+  cli:
+    command: "delete {{ nxos_config_replace_fs }}{{ nxos_config_checkpoint_filename }}"
+  when: nxos_config_checkpoint_filename in nxos_dir_listing.stdout
+
+- block:
+  - name: configuration checkpoint
+    cli:
+      command: "copy running-config {{ nxos_config_replace_fs }}{{ nxos_config_checkpoint_filename }}"
+    register: result
+
+  - assert:
+      that:
+        - "result.failed == false"
+
+  rescue:
+  - name: delete old checkpoint file
+    cli:
+      command: "delete {{ nxos_config_replace_fs }}{{ nxos_config_checkpoint_filename }}"

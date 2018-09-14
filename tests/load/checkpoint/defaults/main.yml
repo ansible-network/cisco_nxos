@@ -1,0 +1,2 @@
+nxos_config_replace_fs: "bootflash:"
+nxos_config_checkpoint_filename: chk_ansible
