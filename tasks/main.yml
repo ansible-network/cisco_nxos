@@ -7,10 +7,10 @@
 - name: set role supported functions
   set_fact:
     nxos_functions:
-      - load_config
+      - config_manager/load
+      - config_manager/get
+      - config_manager/save
       - get_facts
-      - get_config
-      - save_config
       - noop
 
 - name: validate the requested function is supported

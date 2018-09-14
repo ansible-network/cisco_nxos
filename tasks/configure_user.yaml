@@ -44,6 +44,6 @@
     nxos_config_file: 'configure_user.j2'
   when: users
 
-- include_tasks: load_config.yaml
+- include_tasks: config_manager/load.yaml
   when: users
 

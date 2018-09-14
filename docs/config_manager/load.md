@@ -1,6 +1,6 @@
 # Load configuration into device
-The `load_config` function provides a means to load a configuration file onto a
-target device running Cisco NXOS. The `load_config` function provides
+The `config_manager/load` function provides a means to load a configuration file onto a
+target device running Cisco NXOS. The `config_manager/load` function provides
 configuration values that allow the source configuration to either be merged
 with the current active configuration (default) or to replace the current
 active configuration on the device.  
@@ -8,18 +8,18 @@ active configuration on the device.
 
 ## How to load a configuration
 Loading a configuration onto a target device is fairly simple and
-straightforward.  By default, the `load_config` function will merge the
+straightforward.  By default, the `config_manager/load` function will merge the
 contents of the provided configuration file with the configuration running on
 the target device.  
 
-Below is an example of how to call the `load_config` function.
+Below is an example of how to call the `config_manager/load` function.
 
 ```
 - hosts: nxos
   
   roles:
     - name: ansible-network.cisco_nxos
-      function: load_config
+      function: config_manager/load
       config_file: nxos.cfg
 ```
 
@@ -27,7 +27,7 @@ The example playbook above will simple load the contents of `nxos.cfg` onto the
 target network devices.
 
 ### How to load and replace a configuration
-The `load_config` function also provides support for replacing the current
+The `config_manager/load` function also provides support for replacing the current
 configuration on a device. `replace` option is only supported on Cisco NXOS
 9K devices.
 
@@ -43,7 +43,7 @@ inadvertantly replace your access to the device.
 
   roles:
     - name: ansible-network.cisco_nxos
-      function: load_config
+      function: config_manager/load
       config_file: nxos.cfg
       replace: yes
       replace_fs: 'bootflash:'
