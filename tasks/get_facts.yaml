@@ -6,7 +6,7 @@
   nxos_capabilities:
 
 - name: run command and parse output
-  include_tasks: run_cli.yaml
+  include_tasks: includes/run_cli.yaml
   vars:
     nxos_command: "{{ item.command }}"
     nxos_parser: "cli/{{ item.parser }}"
