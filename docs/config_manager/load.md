@@ -1,6 +1,6 @@
 # Load configuration into device
 The `config_manager/load` function provides a means to load a configuration file onto a
-target device running Cisco NXOS. The `config_manager/load` function provides
+target device running Cisco NX-OS. The `config_manager/load` function provides
 configuration values that allow the source configuration to either be merged
 with the current active configuration (default) or to replace the current
 active configuration on the device.  
