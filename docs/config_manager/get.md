@@ -1,7 +1,7 @@
 # Get configuration from device
 The `config_manager/get` function will return the either the current active or current
-saved configuration from an Cisco NX-OS devices.  This function is only
-supported over `network_cli` connections.
+saved configuration from Cisco NX-OS devices.  This function is only supported over
+`network_cli` connections.
 
 The `config_manager/get` function will also parse the device active configuration into
 a set of host facts during its execution.  All of the parsed facts are stored

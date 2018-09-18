@@ -1,0 +1,9 @@
+major_changes:
+- Initial release of the ``cisco_nxos`` Ansible role.
+- This role provides functions to perform automation activities on Cisco NX-OS devices.
+
+new_tasks:
+- ``get_facts`` function can be used to collect facts from Cisco NX-OS devices.
+- ``config_manager/get`` function returns the either the current active or current saved configuration from Cisco NX-OS devices.
+- ``config_manager/load`` function provides a means to load a configuration file onto a target device running Cisco NX-OS. 
+- ``config_manager/save`` function saves the current active (running) configuration to the startup configuration.
