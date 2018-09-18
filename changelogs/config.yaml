@@ -17,6 +17,7 @@ sections:
 - ['new_filter_plugins', 'New Filter Plugins']
 - ['new_modules', 'New Modules']
 - ['new_tasks', 'New Tasks']
+- ['new_functions', 'New Functions']
 - ['bugfixes', 'Bugfixes']
 - ['known_issues', 'Known Issues']
 - ['docs', 'Documentation Updates']
