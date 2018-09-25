@@ -13,7 +13,7 @@ argument_spec:
           configuration text will be loaded onto the target network device.
       type: str
       aliases:
-        - config_text
+        - config_manager_text
 
     nxos_config_file:
       description:
@@ -21,7 +21,7 @@ argument_spec:
           loaded onto the target network device.
       type: str
       aliases:
-        - config_file
+        - config_manager_file
 
     nxos_config_replace:
       description:

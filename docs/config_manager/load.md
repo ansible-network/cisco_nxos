@@ -20,7 +20,7 @@ Below is an example of how to call the `config_manager/load` function.
   roles:
     - name: ansible-network.cisco_nxos
       function: config_manager/load
-      config_file: nxos.cfg
+      nxos_config_file: nxos.cfg
 ```
 
 The example playbook above will simple load the contents of `nxos.cfg` onto the
@@ -44,7 +44,7 @@ inadvertantly replace your access to the device.
   roles:
     - name: ansible-network.cisco_nxos
       function: config_manager/load
-      config_file: nxos.cfg
+      nxos_config_file: nxos.cfg
       replace: yes
       replace_fs: 'bootflash:'
 ```
@@ -88,7 +88,7 @@ This value is *required*
 
 #### Aliases
 
-* config_file
+* config_manager_file
 
 ### nxos_config_remove_temp_files
 

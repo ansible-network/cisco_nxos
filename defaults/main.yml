@@ -8,8 +8,8 @@ nxos_config_source:
 nxos_get_facts_command_map: "{{ role_path }}/vars/get_facts_command_map.yaml"
 nxos_get_facts_subset: "{{ subset | default(['default']) }}"
 
-nxos_config_file: "{{ config_file | default(None) }}"
-nxos_config_text: "{{ config_text | default(None) }}"
+nxos_config_file: "{{ config_manager_file | default(None) }}"
+nxos_config_text: "{{ config_manager_text | default(None) }}"
 nxos_config_replace: "{{ replace | default(False) }}"
 nxos_config_replace_fs: "{{ replace_fs | default('bootflash:') }}"
 nxos_rollback_enabled: "{{ rollback_enabled | default(True) }}"
