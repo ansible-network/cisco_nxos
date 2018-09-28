@@ -8,23 +8,82 @@
   validate_role_spec:
     spec: load_config_spec.yaml
 
-- name: lookup config file
+# if a configuration file name is passed to this function, load its contents
+- name: load configuration file contents
   set_fact:
-    nxos_config_text: "{{ lookup('config_template', nxos_config_file) | join('\n') }}"
-  when: nxos_config_file != ''
+    config_manager_text: "{{ lookup('config_template', config_manager_file) | join('\n') }}"
+  when: config_manager_file is defined
+
+- name: validate config_manager_text is defined
+  fail:
+    msg: "missing required arg: config_manager_text"
+  when: config_manager_text is undefined
 
 - name: collect platform capabilities as facts
   nxos_capabilities:
 
-- name: fail if replace is used for other platforms except 9K
-  fail:
-    msg: "replace is supported only on NXOS 9K platforms"
-  when: nxos_config_replace and "9K" not in cisco_nxos.capabilities.network_os_platform
+# This block will validate that the target device supports all of the requisite
+# features to move forward.  Config replace and rollback is only supported on
+# the NX-OS 9K so any other platform will fail here.
+- name: validate remote target feature support
+  block:
+    - name: fail host if replace enabled and not NX-OS 9K
+      fail:
+        msg: "replace is supported only available on NX-OS 9K platforms"
+      when: config_manager_replace
 
-- name: Include replace task
-  include_tasks: includes/configure/replace.yaml
-  when: not ansible_check_mode and nxos_config_replace
+    - name: fail host if rollback enabled and not NX-OS 9K
+      fail:
+        msg: "rollback feature is only available on NX-OS 9K platforms"
+      when: nxos_rollback_enabled
+  when: "'9K' not in cisco_nxos.capabilities.network_os_platform"
 
-- name: Include configure task
-  include_tasks: includes/configure/configure.yaml
-  when: not ansible_check_mode and not nxos_config_replace
+- name: display message
+  debug:
+    msg: "nxos configuration rollback is {{ nxos_rollback_enabled | bool | ternary('enabled', 'disabled') }}"
+
+- name: prepare checkpoint of existing running config
+  block:
+    - name: set the checkpoint filename
+      set_fact:
+        nxos_checkpoint_filename: chk_ansible
+
+    - name: create the configuration checkpoint file (if enabled)
+      include_tasks: "{{ role_path }}/includes/checkpoint/create.yaml"
+  when: nxos_rollback_enabled
+
+- name: load configuration on target device
+  block:
+    - name: load configuration uisng configure terminal
+      include_tasks: includes/configure/terminal.yaml
+      when: not config_manager_replace
+      vars:
+        nxos_config_text: "{{ config_manager_text }}"
+
+    - name: load configuration using configure replace
+      include_tasks: includes/configure/replace.yaml
+      when: config_manager_replace
+      vars:
+        nxos_config_text: "{{ config_manager_text }}"
+
+  rescue:
+    - name: initiate configuration rollback (if supported)
+      block:
+        - name: display message
+          debug:
+            msg: "initiating rollback to checkpoint configuration"
+
+        - name: restore previous checkpoint configuration
+          include_tasks: includes/checkpoint/restore.yaml
+      when: nxos_rollback_enabled
+
+    - name: fail host due to config load error
+      fail:
+        msg: "error loading configuration on to target device"
+
+# this include will only execute if nxos_rollback_enabled is True.  There
+# doesn't need to be a platform check since any host would have already failed
+# prior to reaching this point if rollback was enabled.
+- name: remove checkpoint configuration from target device
+  include_tasks: includes/checkpoint/remove.yaml
+  when: nxos_rollback_enabled

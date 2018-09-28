@@ -1,12 +1,14 @@
 # Load configuration into device
-The `config_manager/load` function provides a means to load a configuration file onto a
-target device running Cisco NX-OS. The `config_manager/load` function provides
-configuration values that allow the source configuration to either be merged
-with the current active configuration (default) or to replace the current
-active configuration on the device.  
 
+The `config_manager/load` function provides a means to load either a
+configuration file or configuration text onto a target device running Cisco
+NX-OS.  The `config_manager/load` function provides configuration values that 
+allow the source configuration to either be merged with the current active 
+configuration (default) or to replace the current active configuration on 
+the device.  
 
 ## How to load a configuration
+
 Loading a configuration onto a target device is fairly simple and
 straightforward.  By default, the `config_manager/load` function will merge the
 contents of the provided configuration file with the configuration running on
@@ -20,13 +22,14 @@ Below is an example of how to call the `config_manager/load` function.
   roles:
     - name: ansible-network.cisco_nxos
       function: config_manager/load
-      nxos_config_file: nxos.cfg
+      config_manager_file: nxos.cfg
 ```
 
 The example playbook above will simple load the contents of `nxos.cfg` onto the
 target network devices.
 
 ### How to load and replace a configuration
+
 The `config_manager/load` function also provides support for replacing the current
 configuration on a device. `replace` option is only supported on Cisco NXOS
 9K devices.
@@ -44,14 +47,29 @@ inadvertantly replace your access to the device.
   roles:
     - name: ansible-network.cisco_nxos
       function: config_manager/load
-      nxos_config_file: nxos.cfg
-      replace: yes
-      replace_fs: 'bootflash:'
+      config_manager_file: nxos.cfg
+      config_manager_replace: yes
 ```
 
 ## Arguments
 
-### nxos_config_replace
+### config_manager_file
+
+This value provides the path to the configuration file to load when
+the function is called. The path to the file can either be provided as
+relative to the playbook root or an absolute path.  
+
+The default value is `null`
+
+### config_manager_text
+
+This value accepts the text form of the configuration to be loaded on to the
+remote device.  This value is mutually exclusive with the config_manager_file
+variable.
+
+The default value is `null`
+
+### config_manager_replace
 
 This value enables or disables the configuration replace feature of the
 function. In order to use `nxos_config_replace` the target device must
@@ -59,9 +77,6 @@ support config replace function, currently only NXOS 9K device supports
 replace.
 
 The default value is `False`
-
-#### Aliases
-* replace
 
 ### nxos_config_replace_fs
 
@@ -72,24 +87,6 @@ The default value is `bootflash:`
 
 This value is *required* when `nxos_config_replace is set` to `yes` or `True`.
 
-#### Aliases
-
-* replace_fs
-
-### nxos_config_file
-
-This required value provides the path to the configuration file to load when
-the function is called. The path to the file can either be provided as
-relative to the playbook root or an absolute path.  
-
-The default value is `null`
-
-This value is *required*
-
-#### Aliases
-
-* config_manager_file
-
 ### nxos_config_remove_temp_files
 
 Configures the function to remove or not remove the temp files created when
@@ -98,7 +95,3 @@ files, one on the Ansible controller and one on the device. This argument
 accepts a boolean value.
 
 The default value is `True`
-
-##### Aliases
-
-* remove_temp_files

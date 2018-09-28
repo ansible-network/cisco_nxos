@@ -1,4 +1,5 @@
-# Create configuration checkpoint when rollback is enabled
+---
+# Create configuration checkpoint when rollback is enabled.
 #
 - name: disable prompt
   cli:

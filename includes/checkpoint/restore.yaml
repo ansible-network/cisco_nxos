@@ -1,3 +1,4 @@
+---
 # Restore configuration if loading configuration fails
 #
 - name: disable prompt

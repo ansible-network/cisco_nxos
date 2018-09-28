@@ -7,34 +7,28 @@ argument_spec:
           set to `nxos` for this provider role.
       required: true
 
-    nxos_config_text:
+    config_manager_text:
       description:
         - Provide the network device configuration as a single string. The
           configuration text will be loaded onto the target network device.
       type: str
-      aliases:
-        - config_manager_text
 
-    nxos_config_file:
+    config_manager_file:
       description:
         - Provide relative or absolute path to the configuration file to be
           loaded onto the target network device.
       type: str
-      aliases:
-        - config_manager_file
 
-    nxos_config_replace:
+    config_manager_replace:
       description:
         - This value enables or disables the configuration replace feature of
-          the function. In order to use nxos_config_replace the target device
+          the function. In order to use config_manager_replace the target device
           must support configure replace function, currently only NXOS 9K
           device supports replace. This argument accepts a boolean value.
       type: bool
       default: false
-      aliases:
-        - replace
 
-    nxos_config_replace_fs:
+    config_manager_replace_fs:
       description:
         - This value provides the directory on the device where the config
           file will be pushed during replace.
@@ -64,7 +58,7 @@ argument_spec:
         - rollback_enabled
 
 mutually_exclusive:
-  - ['nxos_config_text', 'nxos_config_file']
+  - ['config_manager_text', 'config_manager_file']
 
 required_one_of:
-  - ['nxos_config_text', 'nxos_config_file']
+  - ['config_manager_text', 'config_manager_file']

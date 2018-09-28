@@ -1,69 +1,78 @@
 ---
-# replace.yaml
+# this block is reponsible for performing a configure replace on the target
+# device.  Unlinke configure terminal, the configuration file is loaded wholly
+# into the device and therefore is not seen line by line in the output.
 #
-- name: disable prompt
-  cli:
-    command: terminal dont-ask
-
-- name: loading configuration onto device
+# Note: This feature is only supported on the Nexus 9K platforms.
+#
+- name: load configuration using configure replace
   block:
-  - name: nxos dir list
-    cli:
-      command: dir
-    register: nxos_dir_listing
+    - name: disable prompt
+      cli:
+        command: terminal dont-ask
 
-  - name: create temp working dir
-    file:
-      path: "{{ nxos_config_working_dir }}"
-      state: directory
-    run_once: true
-    check_mode: false
+    - name: loading configuration onto device
+      block:
+        - name: nxos dir list
+          cli:
+            command: dir
+          register: nxos_dir_listing
 
-    # always set check mode to false here as this task needs to always run
-    # in order to fully execute the task list.
-  - name: template source config
-    copy:
-      content: "{{ nxos_config_text }}"
-      dest: "{{ nxos_config_working_dir }}/{{ nxos_config_temp_config_file }}"
-    check_mode: false
+        - name: create temp working dir
+          tempfile:
+            state: directory
+          register: nxos_temp_working_dir
+          check_mode: false
 
-  - name: enable the nxos scp server
-    cli:
-      command: "{{ item }}"
-    loop:
-      - configure terminal
-      - feature scp-server
-      - end
+          # always set check mode to false here as this task needs to always run
+          # in order to fully execute the task list.
+        - name: template source config
+          copy:
+            content: "{{ nxos_config_text }}"
+            dest: "{{ nxos_temp_working_dir.path }}/{{ nxos_config_temp_config_file }}"
+          check_mode: false
 
-  - name: remove old config file from device
-    cli:
-      command: "delete {{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
-    when: nxos_config_temp_config_file in nxos_dir_listing.stdout
+          # The scp server has to be enabled to transfer the configuration file to
+          # the remote device in order to load it onto the device
+        - name: enable the nxos scp server
+          cli:
+            command: "{{ item }}"
+          loop:
+            - configure terminal
+            - feature scp-server
+            - end
 
-  - name: copy configuration to device
-    net_put:
-      src: "{{ nxos_config_working_dir }}/{{ nxos_config_temp_config_file }}"
-      dest: "{{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
+        - name: remove old config file from device (if necessary)
+          cli:
+            command: "delete {{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
+          when: nxos_config_temp_config_file in nxos_dir_listing.stdout
 
-  - name: replace current active configuration
-    cli:
-      command: "configure replace {{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
-    register: result_replace
+        - name: copy configuration to device
+          net_put:
+            src: "{{ nxos_temp_working_dir.path }}/{{ nxos_config_temp_config_file }}"
+            dest: "{{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
 
-  always:
-  - name: remove uploaded configuration
-    cli:
-      command: "delete {{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
-    when: nxos_config_remove_temp_files
+        - name: replace current active configuration
+          cli:
+            command: "configure replace {{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
+          register: nxos_result_replace
 
-  - name: remove temp working dir
-    file:
-      path: "{{ nxos_config_working_dir }}"
-      state: absent
-    run_once: true
-    when: nxos_config_remove_temp_files
+      always:
+        - name: remove uploaded configuration
+          cli:
+            command: "delete {{ nxos_config_replace_fs }}{{ nxos_config_temp_config_file }}"
+          when: nxos_config_remove_temp_files
 
-  - name: set host failed
-    fail:
-      msg: "error loading configuration onto target device, rollbacked to previous configuration"
-    when: result_replace.failed == True or (result_replace.stdout is defined and result_replace.stdout is search("Configure replace failed"))
+        - name: remove temp working dir
+          file:
+            path: "{{ nxos_temp_working_dir.path }}"
+            state: absent
+          run_once: true
+          when: nxos_config_remove_temp_files
+
+        - name: set host failed
+          fail:
+            msg: "error loading configuration onto target device, rollbacked to previous configuration"
+          when: nxos_result_replace.failed == True or (nxos_result_replace.stdout is defined and nxos_result_replace.stdout is search("Configure replace failed"))
+
+  when: not ansible_check_mode
