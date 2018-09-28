@@ -6,7 +6,7 @@
 
 - name: validate task arguments
   validate_role_spec:
-    spec: load_config_spec.yaml
+    spec: config_manager/load.yaml
 
 # if a configuration file name is passed to this function, load its contents
 - name: load configuration file contents

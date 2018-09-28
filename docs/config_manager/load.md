@@ -47,25 +47,17 @@ inadvertantly replace your access to the device.
   roles:
     - name: ansible-network.cisco_nxos
       function: config_manager/load
-      config_manager_file: nxos.cfg
+      config_manager_text: "{{ lookup('file', 'nxos.cfg') }}"
       config_manager_replace: yes
 ```
 
 ## Arguments
 
-### config_manager_file
-
-This value provides the path to the configuration file to load when
-the function is called. The path to the file can either be provided as
-relative to the playbook root or an absolute path.  
-
-The default value is `null`
-
 ### config_manager_text
 
 This value accepts the text form of the configuration to be loaded on to the
-remote device.  This value is mutually exclusive with the config_manager_file
-variable.
+remote device.  The configuration file should be the native set of commands
+used to configure the remote device
 
 The default value is `null`
 

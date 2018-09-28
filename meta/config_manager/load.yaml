@@ -1,0 +1,23 @@
+---
+argument_spec:
+
+    ansible_network_os:
+      description:
+        - Set the name of Ansible network os platform. This value should be
+          set to `nxos` for this provider role.
+      required: true
+
+    config_manager_text:
+      description:
+        - Provide the network device configuration as a single string. The
+          configuration text will be loaded onto the target network device.
+      type: str
+
+    config_manager_replace:
+      description:
+        - This value enables or disables the configuration replace feature of
+          the function. In order to use config_manager_replace the target device
+          must support configure replace function, currently only NXOS 9K
+          device supports replace. This argument accepts a boolean value.
+      type: bool
+      default: false
