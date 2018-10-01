@@ -39,3 +39,17 @@
         value: "{{ item.fact.status }}"
       - key: ports
         value: "{{ item.fact.ports.replace('\n', ',').replace(' ', '').replace('Eth', 'Ethernet').split(',')[:-1] }}"
+
+- name: generate existing vlan json data structure
+  json_template:
+    template:
+      - key: id
+        value: "{{ item.fact.id }}"
+      - key: name
+        value: "{{ item.fact.name }}"
+      - key: status
+        value: "{{ item.fact.status }}"
+
+  loop: "{{ cli_values }}"
+  export: yes
+  register: vlan_facts

@@ -1,0 +1,62 @@
+---
+- name: "check for required fact - vlan ID"
+  fail:
+    msg: "missing required fact: Vlan ID"
+  loop: "{{ vlans }}"
+  when: ( vlan.id is not defined )
+  loop_control:
+    loop_var: vlan
+  delegate_to: localhost
+
+- name: "check if vlan ID is greater than 1"
+  fail:
+    msg: "vlan_id is less than 1 (valid-range: 1-4094)"
+  loop: "{{ vlans }}"
+  loop_control:
+    loop_var: vlan
+  when:
+    - vlan.id < 1
+  delegate_to: localhost
+
+- name: "check if vlan ID is less than 4094"
+  fail:
+    msg: "vlan_id is greater than 4094 (valid-range: 1-4094)"
+  loop: "{{ vlans }}"
+  loop_control:
+    loop_var: vlan
+  when:
+    - vlan.id > 4094
+  delegate_to: localhost
+
+- name: "fetch existing vlan(s)"
+  cli:
+    command: show vlan brief
+  register: vlan_output
+
+- name: "generate existing user(s) facts as JSON"
+  command_parser:
+    file: "{{ role_path }}/parser_templates/cli/show_vlan_brief.yaml"
+    content: "{{ vlan_output.stdout }}"
+
+- name: "show existing user information"
+  debug:
+    var: vlan_facts
+
+- name: "filter out vlans that need to be configured"
+  set_fact:
+    vlans: "{{ vlans | difference(vlan_facts) }}"
+
+- name: "display vlans to configure"
+  debug:
+    var: vlans
+
+- set_fact:
+    nxos_vlans: "{{ vlans }}"
+
+- name: "fetch template for configuring vlan(s)"
+  set_fact:
+    nxos_config_text: "{{ lookup('config_template', 'configure_vlans.j2') }}"
+  when: vlans
+
+- include_tasks: config_manager/load.yaml
+  when: vlans

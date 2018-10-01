@@ -1,0 +1,13 @@
+{% for vlan in vlans %}
+
+{% if vlan.state is defined and vlan.state == 'absent' %}
+no vlan {{ vlan.id }}
+
+{% else %}
+
+vlan {{ vlan.id}}
+name {{ vlan.name | default(omit) }}
+state {{ vlan.status | default(omit) }}
+
+{% endif %}
+{% endfor %}
