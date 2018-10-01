@@ -7,6 +7,14 @@ Ansible Network cisco_nxos
 v2.6.1
 ======
 
+.. _Ansible Network cisco_nxos_v2.6.1_New Tasks:
+
+New Tasks
+---------
+
+- Add ``configure_vlans`` task.
+
+
 .. _Ansible Network cisco_nxos_v2.6.1_Bugfixes:
 
 Bugfixes
