@@ -2,12 +2,27 @@
 Ansible Network cisco_nxos
 ==========================
 
-.. _Ansible Network cisco_nxos_2.6.0:
+.. _Ansible Network cisco_nxos_v2.6.1:
 
-2.6.0
-=====
+v2.6.1
+======
 
-.. _Ansible Network cisco_nxos_2.6.0_Major Changes:
+.. _Ansible Network cisco_nxos_v2.6.1_Bugfixes:
+
+Bugfixes
+--------
+
+- Fix parameters to align with config_manager role `cisco_nxos#34 <https://github.com/ansible-network/cisco_nxos/pull/34>`_.
+
+- validate_role_spec to only consider config_manager_text parameter `cisco_nxos#35 <https://github.com/ansible-network/cisco_nxos/pull/35>`_.
+
+
+.. _Ansible Network cisco_nxos_v2.6.0:
+
+v2.6.0
+======
+
+.. _Ansible Network cisco_nxos_v2.6.0_Major Changes:
 
 Major Changes
 -------------
@@ -17,7 +32,7 @@ Major Changes
 - This role provides functions to perform automation activities on Cisco NX-OS devices.
 
 
-.. _Ansible Network cisco_nxos_2.6.0_New Functions:
+.. _Ansible Network cisco_nxos_v2.6.0_New Functions:
 
 New Functions
 -------------

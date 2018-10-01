@@ -1,0 +1,3 @@
+bugfixes:
+- Fix parameters to align with config_manager role `cisco_nxos#34 <https://github.com/ansible-network/cisco_nxos/pull/34>`_.
+- validate_role_spec to only consider config_manager_text parameter `cisco_nxos#35 <https://github.com/ansible-network/cisco_nxos/pull/35>`_.
