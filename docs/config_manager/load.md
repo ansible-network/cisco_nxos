@@ -22,7 +22,7 @@ Below is an example of how to call the `config_manager/load` function.
   roles:
     - name: ansible-network.cisco_nxos
       function: config_manager/load
-      config_manager_file: nxos.cfg
+      config_manager_text: "{{ lookup('file', 'nxos.cfg') }}"
 ```
 
 The example playbook above will simple load the contents of `nxos.cfg` onto the
