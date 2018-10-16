@@ -1,0 +1,2 @@
+major_changes:
+- Initial release of 2.7.0 ``cisco_nxos`` Ansible role that is supported with Ansible 2.7.0 
