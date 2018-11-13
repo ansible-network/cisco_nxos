@@ -2,6 +2,19 @@
 Ansible Network cisco_nxos
 ==========================
 
+.. _Ansible Network cisco_nxos_v2.6.2:
+
+v2.6.2
+======
+
+.. _Ansible Network cisco_nxos_v2.6.2_Bugfixes:
+
+Bugfixes
+--------
+
+- Fix config_manager/load function `cisco_nxos#46 <https://github.com/ansible-network/cisco_nxos/pull/46>`_.
+
+
 .. _Ansible Network cisco_nxos_v2.6.1:
 
 v2.6.1

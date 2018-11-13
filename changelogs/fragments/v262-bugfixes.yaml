@@ -1,0 +1,2 @@
+bugfixes:
+- Fix config_manager/load function `cisco_nxos#46 <https://github.com/ansible-network/cisco_nxos/pull/46>`_.
