@@ -23,10 +23,6 @@
   set_fact:
     nxos_config_replace: "{{ config_manager_replace | default(False) }}"
 
-- name: set nxos_config_text
-  set_fact:
-    nxos_config_text: "{{ config_manager_text }}"
-
 - name: collect platform capabilities as facts
   nxos_capabilities:
 
@@ -66,10 +62,14 @@
       cli_config:
         config: "{{ nxos_config_text }}"
       when: not nxos_config_replace
+      vars:
+        nxos_config_text: "{{ config_manager_text }}"
 
     - name: load configuration using configure replace
       include_tasks: includes/configure/replace.yaml
       when: nxos_config_replace
+      vars:
+        nxos_config_text: "{{ config_manager_text }}"
 
   rescue:
     - name: initiate configuration rollback (if supported)

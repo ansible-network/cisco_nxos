@@ -1,0 +1,2 @@
+minor_changes:
+- Fix config_manager/load function and use cli_config `cisco_nxos#45 <https://github.com/ansible-network/cisco_nxos/pull/45>`_.
