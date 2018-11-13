@@ -5,8 +5,8 @@ are designed to work with Cisco NX-OS network devices. The functions in this rol
 
 ## Requirements
 
-* Ansible 2.6 or later
-* Ansible Network Engine Role 2.6.2 or later
+* Ansible 2.7 or later
+* Ansible Network Engine Role 2.7.0 or later
 
 ## Functions
 

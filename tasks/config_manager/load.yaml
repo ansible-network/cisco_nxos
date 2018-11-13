@@ -19,6 +19,14 @@
     msg: "missing required arg: config_manager_text"
   when: config_manager_text is undefined
 
+- name: set config_manager_replace
+  set_fact:
+    nxos_config_replace: "{{ config_manager_replace | default(False) }}"
+
+- name: set nxos_config_text
+  set_fact:
+    nxos_config_text: "{{ config_manager_text }}"
+
 - name: collect platform capabilities as facts
   nxos_capabilities:
 
@@ -30,7 +38,7 @@
     - name: fail host if replace enabled and not NX-OS 9K
       fail:
         msg: "replace is supported only available on NX-OS 9K platforms"
-      when: config_manager_replace
+      when: nxos_config_replace
 
     - name: fail host if rollback enabled and not NX-OS 9K
       fail:
@@ -54,17 +62,14 @@
 
 - name: load configuration on target device
   block:
-    - name: load configuration uisng configure terminal
-      include_tasks: includes/configure/terminal.yaml
-      when: not config_manager_replace
-      vars:
-        nxos_config_text: "{{ config_manager_text }}"
+    - name: load config to device
+      cli_config:
+        config: "{{ nxos_config_text }}"
+      when: not nxos_config_replace
 
     - name: load configuration using configure replace
       include_tasks: includes/configure/replace.yaml
-      when: config_manager_replace
-      vars:
-        nxos_config_text: "{{ config_manager_text }}"
+      when: nxos_config_replace
 
   rescue:
     - name: initiate configuration rollback (if supported)

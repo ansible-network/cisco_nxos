@@ -35,12 +35,8 @@
           # The scp server has to be enabled to transfer the configuration file to
           # the remote device in order to load it onto the device
         - name: enable the nxos scp server
-          cli:
-            command: "{{ item }}"
-          loop:
-            - configure terminal
-            - feature scp-server
-            - end
+          cli_config:
+            config: "feature scp-server"
 
         - name: remove old config file from device (if necessary)
           cli:

@@ -20,4 +20,3 @@ argument_spec:
           must support configure replace function, currently only NXOS 9K
           device supports replace. This argument accepts a boolean value.
       type: bool
-      default: false
