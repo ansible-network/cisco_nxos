@@ -30,20 +30,24 @@
 - name: "show existing user information"
   debug:
     var: user_account_facts
+  delegate_to: localhost
  
 - name: "filter out users that need to be configured"
   set_fact:
     users: "{{ users | difference(user_account_facts) }}"
+  delegate_to: localhost
  
 - name: "display users to configure"
   debug:
     var: users
+  delegate_to: localhost
    
 - name: "fetch template for configuring user(s)"
   set_fact:
-    nxos_config_file: 'configure_user.j2'
+    config_manager_text: "{{ lookup('config_template', 'configure_user.j2') }}"
   when: users
+  delegate_to: localhost
 
 - include_tasks: config_manager/load.yaml
   when: users
-
+  delegate_to: localhost
