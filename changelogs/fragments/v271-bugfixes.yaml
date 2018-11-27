@@ -1,0 +1,2 @@
+bugfixes:
+- Update and optimize configure_user `cisco_nxos#48 <https://github.com/ansible-network/cisco_nxos/pull/48>`_.

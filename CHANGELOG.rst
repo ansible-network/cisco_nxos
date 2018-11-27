@@ -2,6 +2,19 @@
 Ansible Network cisco_nxos
 ==========================
 
+.. _Ansible Network cisco_nxos_v2.7.1:
+
+v2.7.1
+======
+
+.. _Ansible Network cisco_nxos_v2.7.1_Bugfixes:
+
+Bugfixes
+--------
+
+- Update and optimize configure_user `cisco_nxos#48 <https://github.com/ansible-network/cisco_nxos/pull/48>`_.
+
+
 .. _Ansible Network cisco_nxos_v2.7.0:
 
 v2.7.0
